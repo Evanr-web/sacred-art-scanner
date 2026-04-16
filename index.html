@@ -114,13 +114,34 @@
       color: white;
       border-color: var(--blue);
     }
-    select, input[type="range"] {
+    select {
       padding: 0.4rem 0.6rem;
       border: 1px solid var(--border);
       border-radius: 6px;
       font-size: 0.85rem;
       font-family: inherit;
       background: white;
+    }
+    .price-range-group {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .price-slider {
+      width: 90px;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+    .price-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--blue);
+      min-width: 45px;
+      text-align: center;
+    }
+    .price-sep {
+      color: var(--muted);
+      font-size: 0.85rem;
     }
     .search-input {
       padding: 0.5rem 1rem;
@@ -430,18 +451,13 @@
           <option value="bids">Most Bids</option>
         </select>
       </div>
-      <div class="filter-group">
-        <label>Max Est:</label>
-        <select id="priceFilter">
-          <option value="0">Any Price</option>
-          <option value="250">Under $250</option>
-          <option value="500">Under $500</option>
-          <option value="1000">Under $1,000</option>
-          <option value="2500">Under $2,500</option>
-          <option value="5000">Under $5,000</option>
-          <option value="10000">Under $10,000</option>
-          <option value="25000">Under $25,000</option>
-        </select>
+      <div class="filter-group price-range-group">
+        <label>Price:</label>
+        <span class="price-label" id="priceMinLabel">$0</span>
+        <input type="range" id="priceMin" min="0" max="50000" step="100" value="0" class="price-slider">
+        <span class="price-sep">–</span>
+        <input type="range" id="priceMax" min="0" max="50000" step="100" value="50000" class="price-slider">
+        <span class="price-label" id="priceMaxLabel">$50k+</span>
       </div>
       <div class="filter-group">
         <button class="filter-btn" id="dealsOnlyBtn" data-active="false">🔥 Hot Deals</button>
@@ -39638,7 +39654,7 @@
   </div>
 
   <div class="footer">
-    <p>Last updated: April 15, 2026 at 10:57 PM</p>
+    <p>Last updated: April 15, 2026 at 10:58 PM</p>
     <p>Data from LiveAuctioneers &amp; Drouot. Click any lot to view on the auction site.</p>
     <p>Prices are estimates — final hammer prices may differ.</p>
   </div>
@@ -39664,7 +39680,10 @@
     const cards = Array.from(gallery.querySelectorAll('.card'));
     const searchInput = document.getElementById('searchInput');
     const sortSelect = document.getElementById('sortSelect');
-    const priceFilter = document.getElementById('priceFilter');
+    const priceMin = document.getElementById('priceMin');
+    const priceMax = document.getElementById('priceMax');
+    const priceMinLabel = document.getElementById('priceMinLabel');
+    const priceMaxLabel = document.getElementById('priceMaxLabel');
     const sourceFilter = document.getElementById('sourceFilter');
     const schoolFilter = document.getElementById('schoolFilter');
     const regionFilter = document.getElementById('regionFilter');
@@ -39700,9 +39719,23 @@
     });
 
     // All filter inputs
+    function formatPrice(val) {
+      val = parseInt(val);
+      if (val >= 50000) return '$50k+';
+      if (val >= 1000) return '$' + (val/1000) + 'k';
+      return '$' + val;
+    }
+    function updatePriceLabels() {
+      let minVal = parseInt(priceMin.value);
+      let maxVal = parseInt(priceMax.value);
+      if (minVal > maxVal) { priceMin.value = maxVal; minVal = maxVal; }
+      priceMinLabel.textContent = formatPrice(minVal);
+      priceMaxLabel.textContent = formatPrice(maxVal);
+    }
+    priceMin.addEventListener('input', () => { updatePriceLabels(); applyFilters(); });
+    priceMax.addEventListener('input', () => { updatePriceLabels(); applyFilters(); });
     searchInput.addEventListener('input', () => applyFilters());
     sortSelect.addEventListener('change', () => applyFilters());
-    priceFilter.addEventListener('change', () => applyFilters());
     sourceFilter.addEventListener('change', () => applyFilters());
     schoolFilter.addEventListener('change', () => applyFilters());
     regionFilter.addEventListener('change', () => applyFilters());
@@ -39710,7 +39743,8 @@
 
     function applyFilters() {
       const search = searchInput.value.toLowerCase();
-      const maxPrice = parseInt(priceFilter.value) || Infinity;
+      const minPrice = parseInt(priceMin.value) || 0;
+      const maxPrice = parseInt(priceMax.value) >= 50000 ? Infinity : parseInt(priceMax.value);
       const sourceVal = sourceFilter.value;
       const schoolVal = schoolFilter.value;
       const region = regionFilter.value;
@@ -39736,6 +39770,7 @@
         if (schoolVal !== 'all' && cardSchool !== schoolVal) show = false;
         if (dealsOnly && score < 70) show = false;
         if (bidsOnly && !hasBids) show = false;
+        if (estLow > 0 && estLow < minPrice) show = false;
         if (maxPrice < Infinity && estLow > maxPrice) show = false;
         if (region !== 'all' && cardRegion !== region) show = false;
         if (timeBucket !== 'all' && cardTime !== timeBucket) show = false;
