@@ -1,0 +1,2357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top Picks — Sacred Art Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #1B2A4A;
+      --gold: #C6A032;
+      --cream: #FAF8F0;
+      --red: #8B2500;
+      --teal: #1A6B5C;
+      --light-gold: #F5ECD7;
+      --dark-text: #2C2C2C;
+      --muted: #6B7280;
+      --border: #E5E2DA;
+      --card-shadow: 0 2px 8px rgba(27, 42, 74, 0.08);
+      --card-hover-shadow: 0 8px 24px rgba(27, 42, 74, 0.15);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--cream);
+      color: var(--dark-text);
+      line-height: 1.5;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--blue) 0%, #2A3D6A 100%);
+      color: white;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+    }
+    .header h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.3rem;
+    }
+    .header .subtitle {
+      color: var(--gold);
+      font-size: 1rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+    }
+    .header .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+    .header .stats .stat-num {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+    }
+    .nav-bar {
+      background: var(--blue);
+      padding: 0.5rem 1.5rem;
+      text-align: center;
+      border-bottom: 2px solid var(--gold);
+    }
+    .nav-bar a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .nav-bar a:hover { color: white; }
+    .nav-bar a.active {
+      color: var(--gold);
+      background: rgba(198, 160, 50, 0.15);
+    }
+    .scoring-progress {
+      background: var(--light-gold);
+      padding: 0.6rem 1.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--blue);
+      border-bottom: 1px solid var(--border);
+    }
+    .scoring-progress .progress-bar {
+      display: inline-block;
+      width: 200px;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      margin: 0 0.5rem;
+      vertical-align: middle;
+    }
+    .scoring-progress .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    /* Filters */
+    .filters {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: center;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .filter-group label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .filter-btn {
+      padding: 0.4rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: white;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .filter-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+    select {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: white;
+    }
+    .search-input {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      width: 220px;
+      font-family: inherit;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--gold); }
+    .results-count {
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding: 0.5rem 1.5rem;
+      text-align: center;
+    }
+
+    /* Gallery */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      padding: 1.5rem;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--card-hover-shadow);
+    }
+    .card-image-link { display: block; text-decoration: none; }
+    .card-image {
+      height: 320px;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #1a1a1a;
+      position: relative;
+    }
+    .status-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-live { background: var(--red); color: white; }
+    .status-upcoming { background: rgba(255,255,255,0.92); color: var(--dark-text); }
+    .vision-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      backdrop-filter: blur(4px);
+    }
+    .score-exceptional { background: rgba(198, 160, 50, 0.95); color: var(--blue); }
+    .score-strong { background: rgba(26, 107, 92, 0.9); color: white; }
+    .score-good { background: rgba(27, 42, 74, 0.85); color: white; }
+    .score-fair { background: rgba(255,255,255,0.85); color: var(--dark-text); }
+
+    .card-body { padding: 1rem 1.2rem 1.2rem; }
+    .attribution {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+    .card-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
+    }
+    .card-title a { color: var(--dark-text); text-decoration: none; }
+    .card-title a:hover { color: var(--blue); }
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .category-tag {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--teal);
+      font-weight: 600;
+      background: #E6F5F0;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+    }
+    .source-tag {
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.12rem 0.4rem;
+      border-radius: 3px;
+    }
+    .source-liveauctioneers { color: #1E40AF; background: #EFF6FF; }
+    .source-drouot { color: #7C2D12; background: #FFF7ED; }
+    .detail-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
+    .chip {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .chip-period { border-color: #C8B88A; color: #8B7D50; }
+    .chip-medium { border-color: #A3C4BC; color: #4A7A6D; }
+    .chip-style { border-color: #B8A9D4; color: #6B5B8D; }
+    .card-pricing { margin-bottom: 0.5rem; }
+    .estimate {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--blue);
+    }
+    .current-bid {
+      font-size: 0.85rem;
+      color: var(--red);
+      font-weight: 500;
+      margin-top: 0.15rem;
+    }
+    .card-footer {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .house { font-style: italic; }
+    .condition-note {
+      font-size: 0.75rem;
+      color: #92400E;
+      background: #FFFBEB;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--muted);
+    }
+    .empty-state h2 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--dark-text);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.8rem; }
+      .header .stats { gap: 1rem; flex-wrap: wrap; }
+      .gallery { grid-template-columns: 1fr; gap: 1rem; padding: 1rem; }
+      .card-image { height: 260px; }
+      .filters { padding: 0.5rem; }
+      .search-input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🏛️ Top Picks</h1>
+    <div class="subtitle">Vision-Curated — Only the Best Religious Art at Auction</div>
+    <div class="stats">
+      <div><span class="stat-num">71</span> Top Picks</div>
+      <div><span class="stat-num">0</span> Museum-Grade</div>
+      <div><span class="stat-num">71</span> Collector</div>
+      <div><span class="stat-num">76</span> Avg Score</div>
+    </div>
+  </div>
+
+  <div class="nav-bar">
+    <a href="index.html">📋 All Lots</a>
+    <a href="picks.html" class="active">🏛️ Top Picks</a>
+  </div>
+
+  <div class="scoring-progress">
+    Vision scoring: 79/1451 lots analyzed (5.4%)
+    <span class="progress-bar"><span class="progress-fill" style="width: 5.4%"></span></span>
+    collector: 71 (avg 76.0) · decorative: 2 (avg 45.0) · reproduction: 3 (avg 25.0) · not_art: 3 (avg 10.0)
+  </div>
+
+  <div class="filters">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search titles, artists...">
+    <div class="filter-group">
+      <label>Tier:</label>
+      <button class="filter-btn active" data-filter="tier" data-value="all">All (71)</button>
+      <button class="filter-btn" data-filter="tier" data-value="museum">🏛️ Museum (0)</button>
+      <button class="filter-btn" data-filter="tier" data-value="collector">⭐ Collector (71)</button>
+    </div>
+    <div class="filter-group">
+      <label>Category:</label>
+      <button class="filter-btn active" data-filter="cat" data-value="all">All</button>
+      <button class="filter-btn" data-filter="cat" data-value="byzantine_eastern">Byzantine (26)</button>
+      <button class="filter-btn" data-filter="cat" data-value="western_devotional">Western (44)</button>
+      <button class="filter-btn" data-filter="cat" data-value="saints">Saints (1)</button>
+    </div>
+    <div class="filter-group">
+      <label>Source:</label>
+      <select id="sourceFilter">
+        <option value="all">All Sources</option>
+        <option value="liveauctioneers">🇺🇸 LiveAuctioneers (0)</option>
+        <option value="drouot">🇫🇷 Drouot (71)</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Sort:</label>
+      <select id="sortSelect">
+        <option value="composite">Best Overall</option>
+        <option value="score">Vision Score</option>
+        <option value="price-low">Price: Low → High</option>
+        <option value="price-high">Price: High → Low</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="results-count" id="resultsCount">71 picks</div>
+
+  <div class="gallery" id="gallery">
+    
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="30000.0">
+      <a href="https://drouot.com/en/l/32963507-attributed-to-francesco-curradi-florence-1570-1661-st-john" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1413/178601/b5bf44e9030a7ca6a907565f40b70d75">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="attribution">Attributed</div>
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32963507-attributed-to-francesco-curradi-florence-1570-1661-st-john" target="_blank" rel="noopener">Attributed to FRANCESCO CURRADI (Florence, 1570 - 1661).</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Italian Baroque, depicting Diana the Huntress with classical drapery and landscape setting</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€30,000 – €35,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="12000.0">
+      <a href="https://drouot.com/en/l/32971791-attributed-to-jean-bellegambe-i-douai-1470-1534-presentation" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=124/178613/45cad5e39e9284ee027dccef17171562">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="attribution">Attributed</div>
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32971791-attributed-to-jean-bellegambe-i-douai-1470-1534-presentation" target="_blank" rel="noopener">Attributed to Jean Bellegambe (I) (Douai 1470-1534)</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">oil on wood panel</span> <span class="chip chip-style">Northern European Late Gothic or Early Renaissance, possibly Flemish school</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€12,000 – €15,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="30000.0">
+      <a href="https://drouot.com/en/l/33101143-workshop-of-albrecht-bouts-leuven-1451-54-1549-christ-as-the" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/e4811cdac14126cb1bc476994442aa41">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="attribution">Workshop</div>
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101143-workshop-of-albrecht-bouts-leuven-1451-54-1549-christ-as-the" target="_blank" rel="noopener">Workshop of Albrecht Bouts</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">oil on wood panel</span> <span class="chip chip-style">Northern European Renaissance, possibly Flemish or German school</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€30,000 – €30,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="saints" data-source="drouot" data-estimate="6000.0">
+      <a href="https://drouot.com/en/l/33000730-workshop-of-peter-paul-rubens-1577-1640-saint-jerome-this" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=2070/178702/4798fbaa6599fdba3ffca43d2e6cda03">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="attribution">Workshop</div>
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33000730-workshop-of-peter-paul-rubens-1577-1640-saint-jerome-this" target="_blank" rel="noopener">Workshop of Peter Paul Rubens (1577-1640) - Saint Jerome.This captivating oil painting, executed in the highly productive workshop of Peter Paul Rubens, depicts the revered Church Father, Saint Jerome. The composition is a masterful example of the Flemish Baroque style, characterized by its dynamic energy and dramatic use of light. The figure of Jerome, identifiable by his flowing white beard and robust physique, fills the frame. He is draped in a brilliant red cardinal&#x27;s cloak, which provides a</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Saints</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Baroque devotional style, possibly Flemish or Italian school, dramatic chiaroscuro lighting</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€6,000 – €8,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="3900.0">
+      <a href="https://drouot.com/en/l/32865494-a-monumental-icon-showing-the-entry-into-jerusalem-from-a" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/bc2ae290e2233b42798263a4f84f3f4e">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865494-a-monumental-icon-showing-the-entry-into-jerusalem-from-a" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING THE ENTRY INTO JERUSALEM FROM A CHURCH ICONOSTASIS Russian, 16th century Tempera on wood panel with kovcheg. Depicting Christ entering the walled city of Jerusalem upon a white horse, the apostles standing on the left, the citizens of the city greeting the Savior to the right. The icon originating in all probability from the Feast Day tier of an iconostasis. Inserted into another panel (vrezka), minimally restored. 74 x 49.5 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox icon painting, Byzantine influenced</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€3,900 – €7,800</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="3900.0">
+      <a href="https://drouot.com/en/l/32865493-a-monumental-icon-showing-the-transfiguration-of-christ-from" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/129f81b964cbc045074afc06f3c66c8c">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865493-a-monumental-icon-showing-the-transfiguration-of-christ-from" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING THE TRANSFIGURATION OF CHRIST FROM A CHURCH ICONOSTASIS Russian, 16th century Tempera on wood panel with kovcheg. Applied metal haloes. Inserted into another panel (vrezka), partially restored. 74.3 x 47.7 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon, Byzantine tradition, Transfiguration scene</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€3,900 – €7,800</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ surface wear, some paint loss especially in lower section, age-appropriate cracking, areas of fading</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="4000.0">
+      <a href="https://drouot.com/en/l/32867243-a-very-fine-icon-showing-a-church-iconostasis-russian-palekh" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178270/4cab0a5f78fbb6686e2fc4c6fde4e19d">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32867243-a-very-fine-icon-showing-a-church-iconostasis-russian-palekh" target="_blank" rel="noopener">A VERY FINE ICON SHOWING A CHURCH ICONOSTASIS Russian, Palekh, circa 1800 Tempera on wood panel. Painted with detail, the iconostasis divided into six tiers, the local tier centered with the Royal Door, the second one displaying church feasts, the next three depicting saints, prophets and forefathers, crowned with the Crucifixion surrounded by scenes of the Passion. Minor vertical crack and border restored. 35.4 x 30.8 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox iconostasis style with multiple saint panels arranged in traditional hierarchy</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€4,000 – €8,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="4000.0">
+      <a href="https://drouot.com/en/l/32865574-a-large-icon-depicting-the-crucifixion-from-a-church" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/9bec8e2eec75b84f2ec20189ee2f2834">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865574-a-large-icon-depicting-the-crucifixion-from-a-church" target="_blank" rel="noopener">A - A LARGE ICON DEPICTING THE CRUCIFIXION FROM A CHURCH ICONOSTASIS Russian, mid 17th century Tempera on wood panel with kovcheg. An icon from the second storey of the Iconostasis, depicting Christ on the Cross, with the Mother of God and saint John accompanied by the holy woman and the centurion at the foot of the Cross, and the wall of Jerusalem in the background. Minimally restored, the border stripped to gesso. 50 x 40 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon, Byzantine style crucifixion scene with traditional compositional elements</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€4,000 – €8,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="4500.0">
+      <a href="https://drouot.com/en/l/32867242-a-very-fine-icon-showing-a-church-iconostasis-russian-palekh" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178270/3e7d9c8fb3f67c74a526d10cedf44e03">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32867242-a-very-fine-icon-showing-a-church-iconostasis-russian-palekh" target="_blank" rel="noopener">A VERY FINE ICON SHOWING A CHURCH ICONOSTASIS Russian, Palekh, circa 1800 Tempera on wood panel with gold highlights. Finely painted with great attention to detail and with an abundant use of chrysography. The panel faithfully reproducing the screen that separates the nave from the sanctuary in the Orthodox Churches. Minor losses. 35 x 29.8 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox iconostasis or calendar icon with multiple saints and feast scenes arranged in registers</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€4,500 – €9,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="3900.0">
+      <a href="https://drouot.com/en/l/32865492-a-monumental-icon-showing-the-baptism-of-christ-from-a" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/a4ce1dc33ccfceaad07b2d48fea64532">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865492-a-monumental-icon-showing-the-baptism-of-christ-from-a" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING THE BAPTISM OF CHRIST FROM A CHURCH ICONOSTASIS Russian, 16th century Tempera on wood panel with kovcheg. Showing Christ in the centre standing in the River Jordan, making a sign of blessing with his right hand, John the Forerunner standing on the left baptizing Christ, three angels standing on the other bank, their hands veiled in reverence, the segment of heaven in the upper part, from which descends the Holy Spirit, depicted as a dove. The borders added later, partia</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">egg tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox icon, Byzantine style with Cyrillic inscription</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€3,900 – €7,800</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="30000.0">
+      <a href="https://drouot.com/en/l/33101240-circle-of-peter-paul-rubens-siegen-1577-1640-antwerp-the" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/7113a41445657f6528347a26b1890291">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="attribution">Circle</div>
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101240-circle-of-peter-paul-rubens-siegen-1577-1640-antwerp-the" target="_blank" rel="noopener">Circle of Peter Paul Rubens</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Flemish Baroque style, reminiscent of Rubens school, Holy Family with Saint Anne composition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€30,000 – €30,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="4500.0">
+      <a href="https://drouot.com/en/l/32974175-hendrik-schoock-1630-utrecht-1707-ibid-portrait-of-the" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1372/178467/5ca742a59a985d041cbf1cd8de9e7b94">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32974175-hendrik-schoock-1630-utrecht-1707-ibid-portrait-of-the" target="_blank" rel="noopener">Hendrik Schoock (1630 Utrecht - 1707 ibid.)</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Northern European portrait style, possibly Dutch or Flemish school, formal portraiture with devotional elements</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€4,500 – €9,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="4500.0">
+      <a href="https://drouot.com/en/l/32867401-a-large-icon-showing-st-paraskeva-from-a-church-iconostasis" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178270/a9d6fe392046b6da97eabcb4d72681ba">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32867401-a-large-icon-showing-st-paraskeva-from-a-church-iconostasis" target="_blank" rel="noopener">A LARGE ICON SHOWING ST. PARASKEVA FROM A CHURCH ICONOSTASIS Russian, 17th century Tempera on wood panel with kovcheg. The background and border stripped to gesso, partially restored. 48.7 x 37 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Byzantine or Eastern Orthodox icon, traditional ecclesiastical style</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€4,500 – €9,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ extensive age-related darkening, surface losses, crackling throughout, paint layer instability in areas</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="30000.0">
+      <a href="https://drouot.com/en/l/33101171-circle-of-tiziano-vecellio-called-titian-pieve-di-cadore" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/c79f7eccdfba01d5549f3d5281e559f0">
+          
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="attribution">Circle</div>
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101171-circle-of-tiziano-vecellio-called-titian-pieve-di-cadore" target="_blank" rel="noopener">Circle of Tiziano Vecellio, called Titian</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Northern European or Flemish school, Counter-Reformation devotional style</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€30,000 – €30,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="12000.0">
+      <a href="https://drouot.com/en/l/32980117-castilian-school-gothic-14th-century-virgin-and-child-wooden" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=174/178664/52d852a10622f50bbbc966930c2f50cd">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32980117-castilian-school-gothic-14th-century-virgin-and-child-wooden" target="_blank" rel="noopener">Castilian School. Gothic. 14th century</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">carved wood</span> <span class="chip chip-style">Gothic Northern European sculpture, Madonna and Child enthroned</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€12,000 – €15,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="8500.0">
+      <a href="https://drouot.com/en/l/32865573-a-monumental-icon-showing-the-crucifixion-of-christ-from-a" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/d07785982dc48b8e0f8f96da79232916">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865573-a-monumental-icon-showing-the-crucifixion-of-christ-from-a" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING THE CRUCIFIXION OF CHRIST FROM A CHURCH ICONOSTASIS Russian, 18th century Tempera on wood panel with kovcheg. The haloes made of gold. Partially restored. 99.4 x 78 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">egg tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox icon, traditional Byzantine style</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€8,500 – €17,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="12000.0">
+      <a href="https://drouot.com/en/l/32865594-a-monumental-icon-showing-the-descent-into-hell-and-the" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/d2dd70de93649dc0e524a63d2812825b">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865594-a-monumental-icon-showing-the-descent-into-hell-and-the" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING THE DESCENT INTO HELL AND THE RESURRECTION OF CHRIST FROM A CHURCH ICONOSTASIS Russian, 18th century Tempera on wood panel with kovcheg. The haloes made of gold. The border stripped to gesso, vertical cracks restored. 89 x 78 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox icon depicting resurrection scene with traditional Byzantine iconographic elements</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€12,000 – €24,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="14000.0">
+      <a href="https://drouot.com/en/l/32867098-a-monumental-icon-showing-the-old-testament-trinity-from-a" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178270/f33d8a834a61c4b804dd557db97cfe04">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32867098-a-monumental-icon-showing-the-old-testament-trinity-from-a" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING THE OLD TESTAMENT TRINITY FROM A CHURCH ICONOSTASIS Russian, 2nd half of the 18th century Tempera on wood panel. The background stripped to gesso, partially restored. 72.3 x 62.8 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon painting, depicts Last Supper with traditional Byzantine iconographic style</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€14,000 – €28,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="12000.0">
+      <a href="https://drouot.com/en/l/32865434-a-very-large-and-fine-icon-showing-the-presentation-of" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/909d15dc6b72f9c4f4da1d8761caaccb">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865434-a-very-large-and-fine-icon-showing-the-presentation-of" target="_blank" rel="noopener">A VERY LARGE AND FINE ICON SHOWING THE PRESENTATION OF CHRIST IN THE TEMPLE FROM A CHURCH ICONOSTASIS North Russia, 16th century North Russian, 16th century Single panel with two reverse sponki (one lost). Kovcheg, egg tempera on tempera on wood panel with kovcheg. The background with traces of gilding. The border stripped to gesso, partially restored. 52.2 x 38.6 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon painting, Byzantine tradition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€12,000 – €24,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ visible age crackling, some paint losses, edge wear, surface darkening consistent with age</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="8000.0">
+      <a href="https://drouot.com/en/l/32866356-a-monumental-icon-showing-christ-in-majesty-from-a-church" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178269/f10112aaf5b305a5db22d33a254929ab">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32866356-a-monumental-icon-showing-christ-in-majesty-from-a-church" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING CHRIST IN MAJESTY FROM A CHURCH ICONOSTASIS KIRCHEN-IKONOSTASE Russian, probably 17th century Russia, probably 17th century Tempera on wood panel with kovcheg. The halo made of gold. The folds of the garments painted in gold assist. The background stripped to gesso, vertical cracks restored. 109.2 x 84.3 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">egg tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox icon, Christ in Majesty within mandorla</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€8,000 – €16,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="18000.0">
+      <a href="https://drouot.com/en/l/32865579-a-monumental-icon-showing-the-descent-into-hell-and-the" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/32eb0537b8dee82760c8dc8468750036">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865579-a-monumental-icon-showing-the-descent-into-hell-and-the" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING THE DESCENT INTO HELL AND THE HARROWING OF HELL FROM A CHURCH ICONOSTASIS Russian, 17th century Tempera on wood panel with kovcheg. The haloes made of gold. The background and border stripped to gesso, losses to the lower edge, laid down on a later panel, vertical crack restored. 77.5 x 61.3 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon, Byzantine tradition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€18,000 – €36,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ significant age-related cracking, paint losses at edges, surface darkening, worn areas in background</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="9000.0">
+      <a href="https://drouot.com/en/l/32866343-a-monumental-icon-showing-christ-in-majesty-from-a-church" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178269/eb719437d6611708be73c6956a450314">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32866343-a-monumental-icon-showing-christ-in-majesty-from-a-church" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING CHRIST IN MAJESTY FROM A CHURCH ICONOSTASIS CHURCH ICONOSTASIS Russian, 16th century Russia, 16th century Tempera on wood panel with kovcheg. Seated on an opulent throne and cushions, Christ is blessing and bearing the open Gospels. His face depicted in subdued earthly tones with white highlights. He is surrounded by an almond shaped area depicted in red. Throughout the mandorla cherubim can be seen. The blue glory decorated with seraphim, the red four-pointed star with</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Eastern Orthodox icon, Byzantine tradition, Christ Pantocrator in mandorla</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€9,000 – €18,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="8000.0">
+      <a href="https://drouot.com/en/l/32867264-a-monumental-pair-of-royal-doors-from-a-church-iconostasis" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178270/787e28af8013c43917e5d503e171e91b">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32867264-a-monumental-pair-of-royal-doors-from-a-church-iconostasis" target="_blank" rel="noopener">A MONUMENTAL PAIR OF ROYAL DOORS FROM A CHURCH ICONOSTASIS Russian, 17th century Tempera on wood panels with kovcheg. The upper part showing the Annunciation, the lower section depicting the four evangelists. Cuts restored, areas or restorations. Each 176 x 46 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox iconography, traditional six-panel folding iconostasis format</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€8,000 – €16,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ significant age-related darkening, paint losses throughout, cracking, wear to faces and details, wood panels show age</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="8000.0">
+      <a href="https://drouot.com/en/l/32867245-a-very-fine-and-rare-travelling-iconostasis-russian-17th" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178270/38c8774a564a4212d58bcb2ea65ef383">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32867245-a-very-fine-and-rare-travelling-iconostasis-russian-17th" target="_blank" rel="noopener">A VERY FINE AND RARE TRAVELLING ICONOSTASIS Russian, 17th century Tempera on 15 wood panels with kovcheg. The haloes made of silver. With Archangels, Saints and Old Testament Prophets in three tiers, the bottom row centred with Christ Pantocrator, immediately flanked by the Virgin and St. John the Forerunner. Minor areas of retouching. 17.7 x 74 cm (extended).</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox iconostasis or polyptych with traditional Byzantine influence</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€8,000 – €16,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="14000.0">
+      <a href="https://drouot.com/en/l/32865683-a-monumental-icon-showing-the-dormition-of-the-mother-of-god" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/651a5c5a96f7e49219973843e1846115">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865683-a-monumental-icon-showing-the-dormition-of-the-mother-of-god" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING THE DORMITION OF THE MOTHER OF GOD FROM A CHURCH ICONOSTASIS Russian, 17th century Egg tempera on wood panel with kovcheg. The Dormition depicts the death of the Mother of God. Tradition relates that when her death grew near, angels brought the apostles from different parts of the world. Christ is shown at center within a mandorla receiving His mother&#x27;s soul, represented as an infant wrapped in swaddling clothes. Above them a red six-winged seraph. The apostles stand ar</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">egg tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox icon, Byzantine tradition depicting Dormition of the Virgin</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€14,000 – €28,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="22000.0">
+      <a href="https://drouot.com/en/l/33117937-giovanni-battista-salvia-known-as-sassoferrato-1609-1685" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=2161/179032/9da70530098866b01d016109b6fe909a">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33117937-giovanni-battista-salvia-known-as-sassoferrato-1609-1685" target="_blank" rel="noopener">Giovanni Battista Salvia, known as Sassoferrato</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">European Baroque devotional, possibly Italian or Spanish school</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€22,000 – €44,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="30000.0">
+      <a href="https://drouot.com/en/l/33101279-giovanni-battista-salvi-called-sassoferrato-sassoferrato" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/87678bb304ae97d080376da17705e332">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101279-giovanni-battista-salvi-called-sassoferrato-sassoferrato" target="_blank" rel="noopener">Giovanni Battista Salvi, called Sassoferrato</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Italian Baroque or Northern European devotional style, classical Madonna composition with refined modeling and drapery</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€30,000 – €30,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="50000.0">
+      <a href="https://drouot.com/en/l/33101154-mariotto-albertinelli-florence-1474-1515-the-pieta-with" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/33d19e03beb2011d13cb928dd29d3ba8">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101154-mariotto-albertinelli-florence-1474-1515-the-pieta-with" target="_blank" rel="noopener">Mariotto Albertinelli</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Italian or Flemish Baroque, Lamentation scene with Renaissance influence</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€50,000 – €50,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="120000.0">
+      <a href="https://drouot.com/en/l/33101306-gaetano-gandolfi-san-matteo-della-decima-1734-1802-bologna" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/cb997029caaac654cd3501d41c29791e">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101306-gaetano-gandolfi-san-matteo-della-decima-1734-1802-bologna" target="_blank" rel="noopener">Gaetano Gandolfi</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Baroque allegorical composition, possibly Italian or Northern European school, dramatic chiaroscuro and dynamic figural arrangement</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€120,000 – €120,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="160000.0">
+      <a href="https://drouot.com/en/l/33101009-eugen-von-blaas-albano-1843-1931-venice-the-christening" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178978/72593dd55a6d3946e5451eaa434ab5d6">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101009-eugen-von-blaas-albano-1843-1931-venice-the-christening" target="_blank" rel="noopener">Eugen von Blaas</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">19th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">19th century European genre painting, likely Italian or Austrian school depicting folk celebration</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€160,000 – €160,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="7000.0">
+      <a href="https://drouot.com/en/l/32980123-spanish-school-first-third-of-the-16th-century-saint-lucy" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=174/178664/1842c4ddb71cfb8d7c1f9d95aa34c24c">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32980123-spanish-school-first-third-of-the-16th-century-saint-lucy" target="_blank" rel="noopener">Spanish School. First third of the 16th century.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Italian Renaissance devotional panels, possibly predella or altarpiece fragments depicting saints</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€7,000 – €10,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="15000.0">
+      <a href="https://drouot.com/en/l/33100983-franz-ittenbach-konigswinter-1813-1879-dusseldorf-the-holy" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178978/1f2a66a08301565eda242e1ba1b41579">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33100983-franz-ittenbach-konigswinter-1813-1879-dusseldorf-the-holy" target="_blank" rel="noopener">Franz Ittenbach</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">19th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">German or Northern European Romantic style nativity scene with detailed landscape elements</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€15,000 – €15,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="10000.0">
+      <a href="https://drouot.com/en/l/32975050-south-german-sculptor-of-the-late-gothic-period-active" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1372/178468/1ece344fa885fe9357d0272eb9b1b0ed">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32975050-south-german-sculptor-of-the-late-gothic-period-active" target="_blank" rel="noopener">South German sculptor of the late Gothic period (active around 1480-1490 in Franconia)</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">polychromed wood with gold leaf</span> <span class="chip chip-style">Late Gothic Northern European devotional sculpture</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€10,000 – €20,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="80000.0">
+      <a href="https://drouot.com/en/l/33101151-lorenzo-di-credi-florence-1459-1537-madonna-and-child-oil-on" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/074f354ac0fbb74f70565702933d395f">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101151-lorenzo-di-credi-florence-1459-1537-madonna-and-child-oil-on" target="_blank" rel="noopener">Lorenzo di Credi</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">oil on wood panel</span> <span class="chip chip-style">Northern European Renaissance, possibly Flemish or German school, Madonna and Child theme with characteristic landscape background</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€80,000 – €80,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="40000.0">
+      <a href="https://drouot.com/en/l/33101185-giorgio-vasari-and-workshop-arezzo-1511-1574-florence-the" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/de7b9b0c47826ee6b0f4fedd76991617">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101185-giorgio-vasari-and-workshop-arezzo-1511-1574-florence-the" target="_blank" rel="noopener">Giorgio Vasari and Workshop</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Italian Baroque or Flemish influenced, Holy Family composition with chiaroscuro lighting</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€40,000 – €40,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="80000.0">
+      <a href="https://drouot.com/en/l/33101155-marco-doggiono-oggiono-circa-1467-1524-milan-madonna-and" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/271bcc87f44dc66e92ae9a81db30a072">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101155-marco-doggiono-oggiono-circa-1467-1524-milan-madonna-and" target="_blank" rel="noopener">Marco D’Oggiono</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">oil on wood panel</span> <span class="chip chip-style">Northern Italian Renaissance, Madonna and Child with landscape background</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€80,000 – €80,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="6000.0">
+      <a href="https://drouot.com/en/l/32993817-sculpture-depicting-the-pieta-lombardy-16th-century-height-x" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1489/178694/b217d675319fbcf759f2985b56607912">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32993817-sculpture-depicting-the-pieta-lombardy-16th-century-height-x" target="_blank" rel="noopener">Sculpture depicting the Pietà - Lombardy, 16th century</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">carved wood</span> <span class="chip chip-style">European devotional sculpture, likely Pietà depicting Mary holding Christ</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€6,000 – €8,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="6000.0">
+      <a href="https://drouot.com/en/l/32993816-polychrome-stucco-sculpture-depicting-the-pieta-central" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1489/178694/fc9ca51d3f63ef5868476eac346728ba">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32993816-polychrome-stucco-sculpture-depicting-the-pieta-central" target="_blank" rel="noopener">Polychrome stucco sculpture depicting the Pietà - Central Italy, 15th century</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">polychromed wood sculpture</span> <span class="chip chip-style">Gothic devotional sculpture, likely Northern European, Pietà subject</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€6,000 – €8,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="6000.0">
+      <a href="https://drouot.com/en/l/33000742-francesco-trevisani-1656-1746-the-mystic-marriage-of-saint" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=2070/178702/663b9f993de225d1fe419f525730a580">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33000742-francesco-trevisani-1656-1746-the-mystic-marriage-of-saint" target="_blank" rel="noopener">Francesco Trevisani (1656 – 1746).</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Italian Baroque devotional painting depicting Holy Family, shows characteristic chiaroscuro and soft modeling</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€6,000 – €8,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="8000.0">
+      <a href="https://drouot.com/en/l/33000723-umbrian-master-15th-century-ecce-homo-the-man-of-sorrows" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=2070/178702/6516e698836b84c37d85fd603a8db1a0">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33000723-umbrian-master-15th-century-ecce-homo-the-man-of-sorrows" target="_blank" rel="noopener">UMBRIAN MASTER, 15TH CENTURY. Ecce Homo (The Man of Sorrows).This exquisite 15th-century panel is a sublime example of Umbrian devotional art, characterized by its lyrical tenderness and meditative stillness. Represented in the Imago Pietatis tradition, the figure of Christ emerges from a circular tondo—a geometric symbol of perfection and eternity—framed by the instruments of the Passion. The delicate modeling of the torso and the serene, downcast gaze reflect the profound influence of the</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on wood panel</span> <span class="chip chip-style">Northern European devotional, possibly Flemish or German, Renaissance-Baroque transitional style</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€8,000 – €12,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="30000.0">
+      <a href="https://drouot.com/en/l/33101224-caravaggesque-master-circa-1640-the-liberation-of-saint" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/03724ef7854303031e961fd523924bc4">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101224-caravaggesque-master-circa-1640-the-liberation-of-saint" target="_blank" rel="noopener">Caravaggesque Master, circa 1640</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Baroque style, dramatic chiaroscuro, appears to depict liberation of Saint Peter from prison</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€30,000 – €30,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="7000.0">
+      <a href="https://drouot.com/en/l/33199972-a-large-irish-giltwood-convex-wall-mirror-circa-1830-in-the" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1606/179317/5f1d2a1e53b84cca55787237441560d9">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="attribution">Manner</div>
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33199972-a-large-irish-giltwood-convex-wall-mirror-circa-1830-in-the" target="_blank" rel="noopener">A LARGE IRISH GILTWOOD CONVEX WALL MIRROR, CIRCA 1830 in the manner of Del Vecchio, the circular glass plate enclosed within reeded ebon slip and a row of spheres, surmounted with a figure of a cherub wearing loose drapery, and winged female figures to each side, the apron formed as acanthus leaves with floral swags and twin Sacred Heart symbols, 190cm x 160cm</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">late 18th to early 19th century</span> <span class="chip chip-medium">convex mirror with gilt wood frame</span> <span class="chip chip-style">Federal or Regency period convex mirror with elaborate carved and gilt decorative elements including classical figures</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€7,000 – €10,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ mirror appears intact, some wear to gilding on ornate frame</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="50000.0">
+      <a href="https://drouot.com/en/l/33101243-erasmus-de-bie-antwerp-1629-1675-the-ommegang-at-the-meir-in" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/dbfd5c5ee614a38db41b987329bd6381">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101243-erasmus-de-bie-antwerp-1629-1675-the-ommegang-at-the-meir-in" target="_blank" rel="noopener">Erasmus de Bie</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Flemish or Dutch genre painting, market or fair scene with detailed crowd composition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€50,000 – €50,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ overall darkening, some cracking visible, areas of paint loss in sky, needs cleaning</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="7000.0">
+      <a href="https://drouot.com/en/l/32993840-high-relief-depicting-the-last-supper-italy-19th-century" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1489/178694/5f7bbfa659b1a37d39fd930ee59a3399">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32993840-high-relief-depicting-the-last-supper-italy-19th-century" target="_blank" rel="noopener">High relief depicting The Last Supper - Italy, 19th century</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">19th century</span> <span class="chip chip-medium">carved marble or plaster relief</span> <span class="chip chip-style">Neoclassical relief sculpture depicting The Last Supper</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€7,000 – €8,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="30000.0">
+      <a href="https://drouot.com/en/l/32970101-peeter-coeck-daelst-and-his-workshop-aalst-1502-brussels" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1091/178636/a2e92a9e22b9a56eb2215049d948d318">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32970101-peeter-coeck-daelst-and-his-workshop-aalst-1502-brussels" target="_blank" rel="noopener">Peeter COECK d&#x27;AELST and his workshop</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Flemish or Dutch genre painting depicting Last Supper scene, following Northern European tradition with detailed interior setting</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€30,000 – €40,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="28000.0">
+      <a href="https://drouot.com/en/l/32980135-jose-garcia-hidalgo-villena-alicante-1645-madrid-1717-the" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=174/178664/fcf51863ee4d84902da3c9d7ada6bd70">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32980135-jose-garcia-hidalgo-villena-alicante-1645-madrid-1717-the" target="_blank" rel="noopener">José García Hidalgo (Villena, Alicante, 1645 - Madrid, 1717)</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Caravaggio school or follower, dramatic chiaroscuro technique, Italian Baroque devotional</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€28,000 – €31,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ significant darkening of varnish, some craquelure visible, areas of paint loss in darker passages</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="6515.0">
+      <a href="https://drouot.com/en/l/33088790-manser-albert-1937-appenzell-2011-winter-landscape-in" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=545/178947/703bb430dc3aa7c6109fd6627b033059">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33088790-manser-albert-1937-appenzell-2011-winter-landscape-in" target="_blank" rel="noopener">MANSER, ALBERT (1937 Appenzell 2011) : Winter landscape in Appenzell</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">20th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">American folk art style winter landscape, possibly Grandma Moses school or influenced by American primitive painting tradition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€6,515 – €9,772</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="50000.0">
+      <a href="https://drouot.com/en/l/33100997-natale-schiavoni-chioggia-1777-1858-venice-a-bathing-nymph" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178978/d4761d6514db216de841728f9ffb6974">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33100997-natale-schiavoni-chioggia-1777-1858-venice-a-bathing-nymph" target="_blank" rel="noopener">Natale Schiavoni</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">19th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">French Academic Neoclassical, mythological subject rather than religious devotional</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€50,000 – €50,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="10000.0">
+      <a href="https://drouot.com/en/l/32945825-eduardo-leon-garrido-madrid-1856-caen-france-1949-lady-with" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1413/178550/74a17e37a186dbde1e0795bf822b9c6f">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32945825-eduardo-leon-garrido-madrid-1856-caen-france-1949-lady-with" target="_blank" rel="noopener">EDUARDO LEÓN GARRIDO (Madrid, 1856 - Caen, France, 1949).</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">late 19th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Academic realist portrait, European school, secular genre painting misclassified as religious art</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€10,000 – €12,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="78.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="50000.0">
+      <a href="https://drouot.com/en/l/33101153-andrea-piccinelli-called-andrea-del-brescianino-siena-circa" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/56f2d4e967303c705c74174d4f4f4b45">
+          
+          <div class="vision-badge score-strong">⭐ 78.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101153-andrea-piccinelli-called-andrea-del-brescianino-siena-circa" target="_blank" rel="noopener">Andrea Piccinelli, called Andrea del Brescianino</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Italian Renaissance/Baroque devotional, Madonna and Child with saints composition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€50,000 – €50,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="15000.0">
+      <a href="https://drouot.com/en/l/32867391-a-monumental-dated-vita-icon-of-st-paraskeva-greek-dated" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178270/69cde80f64090ad71552ba4766cb15fc">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32867391-a-monumental-dated-vita-icon-of-st-paraskeva-greek-dated" target="_blank" rel="noopener">A MONUMENTAL DATED VITA ICON OF ST. PARASKEVA Greek, dated 1717 Tempera on wood panel. Finely painted in great detail and bright colors on a gold ground. St. Paraskeva, depicted frontally and full-length, surrounded by twelve scenes illustrating events from her life and martyrdom. Signed in Greek and dated in the central image. Partially restored. 79 x 53 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">18th-19th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon with hagiographic scenes</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€15,000 – €30,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ visible wear, some paint loss, darkening of varnish, edge damage</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="9000.0">
+      <a href="https://drouot.com/en/l/32865687-a-monumental-icon-showing-the-dormition-of-the-mother-of-god" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/81ed7b7fa0e2428cf374399ceed650d5">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865687-a-monumental-icon-showing-the-dormition-of-the-mother-of-god" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING THE DORMITION OF THE MOTHER OF GOD FROM A CHURCH ICONOSTASIS Russian, late 18th century Tempera on wood panel. The background stripped to gesso, partially restored. 110.6 x 69.5 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">18th-19th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon depicting the Dormition of the Virgin Mary</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€9,000 – €18,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="5500.0">
+      <a href="https://drouot.com/en/l/32866352-a-monumental-icon-showing-st-john-the-forerunner-from-a" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178269/71a362ff740ec0d2bf4d2b7556e1ed08">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32866352-a-monumental-icon-showing-st-john-the-forerunner-from-a" target="_blank" rel="noopener">A MONUMENTAL ICON SHOWING ST. JOHN THE FORERUNNER FROM A CHURCH ICONOSTASIS Russian, circa 1600 Tempera on wood panel with kovcheg. THe halo made of gold. Wearings, partially restored. 92 x 45 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon, Byzantine tradition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€5,500 – €11,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="8000.0">
+      <a href="https://drouot.com/en/l/32865578-a-very-fine-and-large-icon-of-doubting-thomas-from-a-church" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/061c0a93e1efef2b3fc2e86d9449a233">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865578-a-very-fine-and-large-icon-of-doubting-thomas-from-a-church" target="_blank" rel="noopener">A VERY FINE AND LARGE ICON OF DOUBTING THOMAS FROM A CHURCH ICONOSTASIS KIRCHEN-IKONOSTASE Russian, 16th century Russia, 16th century Tempera on wood panel with kovcheg. The halo made of gold. Christ is depicted standing in the center of the composition before a church; His Apostles are divided on either side, St. Thomas steps forward to examine His side. Minimally restored. 43.3 x 36.5 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">egg tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon, traditional Byzantine style with Cyrillic inscription</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€8,000 – €16,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ visible cracking, paint losses in upper areas, darkened varnish, wear consistent with age</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="5000.0">
+      <a href="https://drouot.com/en/l/32865755-a-monumental-and-very-fine-icon-showing-the-smolenskaya" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178269/fab3dddc4ddde1b948de81b073abc40e">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865755-a-monumental-and-very-fine-icon-showing-the-smolenskaya" target="_blank" rel="noopener">A MONUMENTAL AND VERY FINE ICON SHOWING THE SMOLENSKAYA MOTHER OF GOD WITH RIZA FROM A CHURCH ICONOSTASIS Russian, 16th century Tempera on wood panel. Painted with sensitive modelled faces. The background and border overlaid with a metal riza chased and repoussé with foliage and with rhythmically applied floral motifs. The archangels Michael and Gabriel appearing in the upper corners. Vertical crack, partially restored, paint losses. 85 x 57.8 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">tempera on wood panel with gold leaf</span> <span class="chip chip-style">Russian Orthodox icon, Byzantine tradition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€5,000 – €10,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ significant age-related darkening, paint losses, cracking throughout, wear to gilded areas</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="12000.0">
+      <a href="https://drouot.com/en/l/32865606-a-monumental-icon-of-the-resurrection-of-christi-from-a" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178268/99dbe69e902b9a4da5e609e1e306dcce">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="attribution">Manner</div>
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32865606-a-monumental-icon-of-the-resurrection-of-christi-from-a" target="_blank" rel="noopener">A MONUMENTAL ICON OF THE RESURRECTION OF CHRISTI FROM A CHURCH ICONOSTASIS Russian, St. Petersburg, early 19th century Tempera on wood panel. Finely painted with the risen Christ ascending in glory above Roman soldiers, flanked by an angel. Executed in great detail in bright colors. The flesh rendered with soft shades, the features well defined. The vvestments finely rendered in shades of red and blue and highlighted in gold. Influenced by the western style of painting. The large size of the off</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">19th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Russian Orthodox or Eastern European icon style with Western influence</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€12,000 – €24,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="8000.0">
+      <a href="https://drouot.com/en/l/32867268-a-rare-set-of-four-icons-showing-the-four-evangelists-from-a" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178270/285933975b86d62854189e496d1667a7">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32867268-a-rare-set-of-four-icons-showing-the-four-evangelists-from-a" target="_blank" rel="noopener">A RARE SET OF FOUR ICONS SHOWING THE FOUR EVANGELISTS FROM A ROYAL DOOR Russian, 17th century Tempera on wood panels with kovcheg. The haloes and garments made of silver, covered by a golden lacquer. The background and border stripped to the gesso, partially restored, some edges added later. 52 x 36.2 cm.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">18th-19th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox or Eastern European icon tradition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€8,000 – €16,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="byzantine_eastern" data-source="drouot" data-estimate="80000.0">
+      <a href="https://drouot.com/en/l/32867097-an-important-monumental-signed-icon-of-the-old-testament" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1517/178270/2e24904c13da8922d26422c22521d828">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32867097-an-important-monumental-signed-icon-of-the-old-testament" target="_blank" rel="noopener">AN IMPORTANT MONUMENTAL SIGNED ICON OF THE OLD TESTAMENT TRINITY FROM A CHURCH ICONOSTASIS OF A CHURCH ICONOSTASIS Russian, Kaluga, Fyodor Semyonov Faleev, early 18th century Russia, Kaluga, Fyodor Semyonov Faleev, early 18th century Tempera on wood panel. The details made of gold. Executed in a contrasting red and green palette with rich accents in gold. The faces are sensitively modeled with nuanced brown and green tones, creating a strong sense of plasticity. Signed in Cyrillic at lower left.</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Byzantine / Eastern</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">18th-19th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Russian Orthodox icon, Trinity/Hospitality of Abraham subject, traditional Byzantine iconographic style</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€80,000 – €160,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="6500.0">
+      <a href="https://drouot.com/en/l/33035853-spanish-school-of-the-xvii-century-madonna-with-the-infant" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=2003/178804/407e870c1a5c26639da0a6e4067506f9">
+          
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        <div class="attribution">School</div>
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33035853-spanish-school-of-the-xvii-century-madonna-with-the-infant" target="_blank" rel="noopener">LIVE APRIL 25 | 03:00 AM 1606 - SPANISH SCHOOL OF THE XVII CENTURY &quot;Madonna with the Infant Jesus and the Lamb of God&quot; Circa Seville, mid to second half of the 17th century, in the tradition of Bartolomé Esteban Murillo. Oil on canvas, marouflaged on wooden panel. The present painting is a high-quality example of 17th century Sevillian Baroque painting. The depiction shows the Virgin Mary in a contemplative pose while the infant Jesus rests in her arms. A particularly iconographic detail is the lamb on the left edge of the pi</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Baroque devotional, possibly Italian or Spanish school, Madonna and Child composition</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€6,500 – €8,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ significant darkening of varnish, some cracking visible, areas of paint loss or wear</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="6515.0">
+      <a href="https://drouot.com/en/l/33088895-strozzi-bernardo-genoa-1581-1644-venice-inscribed-attributed" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=545/178947/1251a1fafb15295351279092b7fc9de9">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33088895-strozzi-bernardo-genoa-1581-1644-venice-inscribed-attributed" target="_blank" rel="noopener">STROZZI, BERNARDO (Genoa 1581 - 1644 Venice)</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Baroque devotional painting, possibly Italian or Flemish school, depicts female saint or martyr with palm frond</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€6,515 – €9,772</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="22000.0">
+      <a href="https://drouot.com/en/l/33117928-andrea-vaccaro-1604-1670-abraham-banishes-hagar-and-ishmael" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=2161/179032/094011a2a5765433ebc316e9129c4f51">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33117928-andrea-vaccaro-1604-1670-abraham-banishes-hagar-and-ishmael" target="_blank" rel="noopener">Andrea Vaccaro</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Italian Baroque or Neapolitan school, biblical scene with dramatic chiaroscuro</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€22,000 – €44,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="16000.0">
+      <a href="https://drouot.com/en/l/32541782-adalbert-trillhaase-1858-erfurt-1936-niederdollendorf" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=2901/177306/a2abc27f5fb23f4cf57497bdc6ac055e">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32541782-adalbert-trillhaase-1858-erfurt-1936-niederdollendorf" target="_blank" rel="noopener">ADALBERT TRILLHAASE</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">late 19th to early 20th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">European academic style with biblical narrative scene, possibly German or Austrian school</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€16,000 – €24,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="12000.0">
+      <a href="https://drouot.com/en/l/33094685-giovanni-bernardino-azzolino-cefalu-1572-naples-1645" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=2164/178967/f38ab988ab916219efef00fc1d6dc108">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33094685-giovanni-bernardino-azzolino-cefalu-1572-naples-1645" target="_blank" rel="noopener">Giovanni Bernardino Azzolino</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Baroque devotional painting, possibly Flemish or Italian school, Madonna and Child with Saint</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€12,000 – €12,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ significant darkening of varnish, surface dirt, some cracking visible, needs cleaning</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="12000.0">
+      <a href="https://drouot.com/en/l/33101141-maestro-di-ambrogio-saraceno-bologna-active-in-the-second" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/40c89d9fb407d9a469d26a76f9399b64">
+          
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101141-maestro-di-ambrogio-saraceno-bologna-active-in-the-second" target="_blank" rel="noopener">Maestro di Ambrogio Saraceno</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">16th-17th century</span> <span class="chip chip-medium">oil on wood panel</span> <span class="chip chip-style">Northern European Renaissance, possibly Flemish or German school</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€12,000 – €12,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="211990.0">
+      <a href="https://drouot.com/en/l/33132885-nicolai-fechin-russian-1881-1955-girl-with-white-headscarf-c" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=586/178759/5b46099e19665e332a3864f8b4ef7665">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33132885-nicolai-fechin-russian-1881-1955-girl-with-white-headscarf-c" target="_blank" rel="noopener">Nicolai Fechin</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">19th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">European folk devotional style, possibly Russian or Eastern European</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€211,990 – €339,184</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ significant paint loss and surface wear throughout, cracking, areas of missing pigment, needs conservation</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="30000.0">
+      <a href="https://drouot.com/en/l/33101145-girolamo-dai-libri-verona-circa-1474-1555-the-nativity-oil" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/d0d7b0679c7ce21841962c67b60f0e83">
+          
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101145-girolamo-dai-libri-verona-circa-1474-1555-the-nativity-oil" target="_blank" rel="noopener">Girolamo dai Libri</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Northern European Late Gothic or Early Renaissance, possibly Flemish or German school</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€30,000 – €30,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="9000.0">
+      <a href="https://drouot.com/en/l/33094706-giuseppe-meda-milan-1534-1599-giuseppe-meda-milan-1534-1599" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=2164/178967/5304f6f0ae21d0310cd2d0a6916c2e30">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33094706-giuseppe-meda-milan-1534-1599-giuseppe-meda-milan-1534-1599" target="_blank" rel="noopener">Giuseppe Meda</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Italian or Spanish Baroque devotional, Madonna of Sorrows</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€9,000 – €9,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="30000.0">
+      <a href="https://drouot.com/en/l/32971792-pieter-neefs-the-elder-antwerp-1578-1656-interior-of-antwerp" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=124/178613/601025d6e3c021f499604b0fdcab003e">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32971792-pieter-neefs-the-elder-antwerp-1578-1656-interior-of-antwerp" target="_blank" rel="noopener">Pieter Neefs the Elder (Antwerp 1578-1656)</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">17th-18th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Northern European church interior, Dutch or Flemish school architectural painting</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€30,000 – €50,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="15000.0">
+      <a href="https://drouot.com/en/l/33101152-maestro-dellospedale-di-mantova-mantua-active-circa-1490" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178983/f2f286518416d548bf6932950d24deaa">
+          
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33101152-maestro-dellospedale-di-mantova-mantua-active-circa-1490" target="_blank" rel="noopener">Maestro dell’Ospedale di Mantova</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">15th-16th century</span> <span class="chip chip-medium">tempera on wood panel</span> <span class="chip chip-style">Northern European Renaissance, possibly Flemish or German school</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€15,000 – €15,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        <div class="condition-note">⚠️ visible cracking throughout, some darkening of varnish, possible small losses in background areas</div>
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="6500.0">
+      <a href="https://drouot.com/en/l/32974293-claude-monet-1840-paris-1926-giverny-rocky-coast-with" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1372/178467/a1c1d24768fef3a020347fd6bd97d3f7">
+          <span class="status-tag status-live">🔴 LIVE</span>
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/32974293-claude-monet-1840-paris-1926-giverny-rocky-coast-with" target="_blank" rel="noopener">Claude Monet (1840 Paris - 1926 Giverny)</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">19th century</span> <span class="chip chip-medium">pencil or charcoal on paper</span> <span class="chip chip-style">Romantic landscape drawing, possibly topographical study</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€6,500 – €13,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="card" data-score="72.0" data-tier="collector" data-category="western_devotional" data-source="drouot" data-estimate="20000.0">
+      <a href="https://drouot.com/en/l/33100984-karl-russ-vienna-1779-1843-portrait-of-the-artists-daughter" target="_blank" rel="noopener" class="card-image-link">
+        <div class="card-image" data-bg="https://cdn.drouot.com/d/image/lot?size=ftall&path=1334/178978/6ffa667d076b79204ef1da93bea34748">
+          
+          <div class="vision-badge score-good">⭐ 72.0</div>
+        </div>
+      </a>
+      <div class="card-body">
+        
+        <h3 class="card-title"><a href="https://drouot.com/en/l/33100984-karl-russ-vienna-1779-1843-portrait-of-the-artists-daughter" target="_blank" rel="noopener">Karl Russ</a></h3>
+        <div class="card-meta">
+          <span class="category-tag">Western Devotional</span>
+          <span class="source-tag source-drouot">🇫🇷 Drouot</span>
+        </div>
+        <div class="detail-chips"><span class="chip chip-period">19th century</span> <span class="chip chip-medium">oil on canvas</span> <span class="chip chip-style">Romantic genre painting with classical influences, possibly German or Austrian school</span></div>
+        <div class="card-pricing">
+          <div class="estimate">€20,000 – €20,000</div>
+          
+        </div>
+        <div class="card-footer">
+          <span class="house">Drouot</span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" id="emptyState" style="display:none">
+    <h2>No picks match your filters</h2>
+    <p>Try broadening your search.</p>
+  </div>
+
+  <div class="footer">
+    <p>Last updated: April 16, 2026 at 04:52 PM</p>
+    <p>Vision-scored by AI. Pieces rated 60+ by quality analysis with museum or collector classification.</p>
+    <p>Click any piece to view on the auction site. Estimates may not reflect final hammer price.</p>
+  </div>
+
+  <script>
+    // Lazy loading
+    const lazyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const div = entry.target;
+          const bg = div.dataset.bg;
+          if (bg) {
+            div.style.backgroundImage = "url('" + bg + "')";
+            div.removeAttribute('data-bg');
+          }
+          lazyObserver.unobserve(div);
+        }
+      });
+    }, { rootMargin: '300px' });
+    document.querySelectorAll('.card-image[data-bg]').forEach(el => lazyObserver.observe(el));
+
+    const gallery = document.getElementById('gallery');
+    const cards = Array.from(gallery.querySelectorAll('.card'));
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const sourceFilter = document.getElementById('sourceFilter');
+    const resultsCount = document.getElementById('resultsCount');
+    const emptyState = document.getElementById('emptyState');
+    
+    let activeTier = 'all';
+    let activeCat = 'all';
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filterType = btn.dataset.filter;
+        document.querySelectorAll(`.filter-btn[data-filter="${filterType}"]`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (filterType === 'tier') activeTier = btn.dataset.value;
+        if (filterType === 'cat') activeCat = btn.dataset.value;
+        applyFilters();
+      });
+    });
+
+    searchInput.addEventListener('input', applyFilters);
+    sortSelect.addEventListener('change', applyFilters);
+    sourceFilter.addEventListener('change', applyFilters);
+
+    function applyFilters() {
+      const search = searchInput.value.toLowerCase();
+      const sourceVal = sourceFilter.value;
+      let visible = 0;
+
+      cards.forEach(card => {
+        const tier = card.dataset.tier;
+        const cat = card.dataset.category;
+        const src = card.dataset.source;
+        const text = (card.querySelector('.card-title')?.textContent || '').toLowerCase() +
+                     (card.querySelector('.attribution')?.textContent || '').toLowerCase();
+
+        let show = true;
+        if (activeTier !== 'all' && tier !== activeTier) show = false;
+        if (activeCat !== 'all' && cat !== activeCat) show = false;
+        if (sourceVal !== 'all' && src !== sourceVal) show = false;
+        if (search && !text.includes(search)) show = false;
+
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      resultsCount.textContent = visible + ' pick' + (visible !== 1 ? 's' : '');
+      emptyState.style.display = visible === 0 ? '' : 'none';
+      gallery.style.display = visible === 0 ? 'none' : '';
+
+      // Re-observe lazy images
+      cards.forEach(card => {
+        if (card.style.display !== 'none') {
+          const img = card.querySelector('.card-image[data-bg]');
+          if (img) lazyObserver.observe(img);
+        }
+      });
+
+      // Sort
+      const sorted = cards.filter(c => c.style.display !== 'none');
+      const sortBy = sortSelect.value;
+      sorted.sort((a, b) => {
+        if (sortBy === 'score') return (parseFloat(b.dataset.score) || 0) - (parseFloat(a.dataset.score) || 0);
+        if (sortBy === 'price-low') return (parseFloat(a.dataset.estimate) || 0) - (parseFloat(b.dataset.estimate) || 0);
+        if (sortBy === 'price-high') return (parseFloat(b.dataset.estimate) || 0) - (parseFloat(a.dataset.estimate) || 0);
+        return 0; // composite = default order from DB
+      });
+      sorted.forEach(card => gallery.appendChild(card));
+    }
+  </script>
+
+</body>
+</html>
